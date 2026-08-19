@@ -31,6 +31,9 @@ resource "helm_release" "argocd" {
       }
       server = {
         replicas = 1
+        service = {
+          type = "LoadBalancer"
+        }
         resources = {
           requests = {
             cpu    = "50m"
@@ -84,38 +87,23 @@ resource "helm_release" "argocd" {
   ]
 }
 
-resource "kubernetes_manifest" "weekday_app" {
+resource "null_resource" "argocd_application" {
   count = var.git_repo_url == "" ? 0 : 1
 
   depends_on = [helm_release.argocd]
 
-  manifest = {
-    apiVersion = "argoproj.io/v1alpha1"
-    kind       = "Application"
-    metadata = {
-      name      = "weekday"
-      namespace = "argocd"
-    }
-    spec = {
-      project = "default"
-      source = {
-        repoURL        = var.git_repo_url
-        targetRevision = var.git_revision
-        path           = "k8s"
-      }
-      destination = {
-        server    = "https://kubernetes.default.svc"
-        namespace = "default"
-      }
-      syncPolicy = {
-        automated = {
-          prune    = true
-          selfHeal = true
-        }
-        syncOptions = [
-          "CreateNamespace=true",
-        ]
-      }
-    }
+  triggers = {
+    repo = var.git_repo_url
+    rev  = var.git_revision
+    manifest = filesha256("${path.module}/../gitops/application.yaml")
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      set -euo pipefail
+      az aks get-credentials -g "${azurerm_resource_group.this.name}" -n "${module.aks.cluster_name}" --overwrite-existing
+      kubectl wait --for=condition=Established crd/applications.argoproj.io --timeout=180s
+      kubectl apply -f "${path.module}/../gitops/application.yaml"
+    EOT
   }
 }
