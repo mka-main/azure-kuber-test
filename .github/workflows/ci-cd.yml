@@ -44,7 +44,7 @@ jobs:
           login="$(az acr show -n "${{ secrets.ACR_NAME }}" --query loginServer -o tsv)"
           image="${login}/myapp:${{ github.sha }}"
           tmp="$(mktemp -d)"
-          for f in 04-aks/manifests/*.yaml; do
+          for f in aks/manifests/*.yaml; do
             sed "s|__IMAGE__|${image}|g" "$f" > "${tmp}/$(basename "$f")"
           done
           kubectl apply -f "${tmp}"
