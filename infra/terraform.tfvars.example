@@ -1,0 +1,8 @@
+location      = "northeurope"
+rg_name       = "mka-tf"
+unique_suffix = "28060"
+aks_name      = "aks-learn"
+node_vm_size  = "Standard_EC2ads_v5"
+node_count    = 1
+# git_repo_url = "https://github.com/mka-main/azure-kuber-test.git"
+# git_revision = "main"

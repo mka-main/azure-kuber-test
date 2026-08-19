@@ -1,0 +1,23 @@
+# Applied once after Argo CD is up (or created by Terraform if git_repo_url is set).
+# Replace the repo URL, then:
+#   kubectl apply -f gitops/application.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: weekday
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/mka-main/azure-kuber-test.git
+    targetRevision: main
+    path: k8s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
