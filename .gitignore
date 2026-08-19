@@ -16,3 +16,33 @@ kubeconfig
 node_modules/
 .DS_Store
 *.bak
+
+# AI / agents
+.agents/
+.cursor/
+.claude/
+.codex/
+.windsurf/
+.continue/
+.aider*
+AGENTS.md
+CLAUDE.md
+skills-lock.json
+**/.agents/
+**/.cursor/
+
+# GitHub
+.github/
+
+*.tfstate
+*.tfstate.*
+.terraform/
+tfplan
+crash.log
+infra/terraform.tfvars
+kubeconfig
+*.pem
+*.key
+node_modules/
+.DS_Store
+*.bak
