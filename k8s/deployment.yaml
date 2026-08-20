@@ -5,7 +5,7 @@ metadata:
   labels:
     app: myapp
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: myapp
@@ -23,7 +23,7 @@ spec:
               containerPort: 8080
           env:
             - name: APP_ENV
-              value: staging
+              value: dev
           resources:
             requests:
               cpu: 50m
