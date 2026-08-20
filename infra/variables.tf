@@ -41,7 +41,7 @@ variable "node_count" {
 
 variable "git_repo_url" {
   type        = string
-  description = "HTTPS Git URL for Argo CD (weekday app in k8s/)."
+  description = "HTTPS Git URL for Argo CD (weekday overlays in k8s/overlays/)."
   default     = "https://github.com/mka-main/azure-kuber-test.git"
 }
 

@@ -95,7 +95,10 @@ resource "null_resource" "argocd_application" {
   triggers = {
     repo = var.git_repo_url
     rev  = var.git_revision
-    manifest = filesha256("${path.module}/../gitops/application.yaml")
+    manifests = sha256(join("", [
+      for f in sort(fileset("${path.module}/../gitops", "*.yaml")) :
+      filesha256("${path.module}/../gitops/${f}")
+    ]))
   }
 
   provisioner "local-exec" {
@@ -103,7 +106,8 @@ resource "null_resource" "argocd_application" {
       set -euo pipefail
       az aks get-credentials -g "${azurerm_resource_group.this.name}" -n "${module.aks.cluster_name}" --overwrite-existing
       kubectl wait --for=condition=Established crd/applications.argoproj.io --timeout=180s
-      kubectl apply -f "${path.module}/../gitops/application.yaml"
+      kubectl apply -f "${path.module}/../gitops"
+      kubectl delete application weekday -n argocd --ignore-not-found
     EOT
   }
 }
